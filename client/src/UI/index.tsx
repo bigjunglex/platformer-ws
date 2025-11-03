@@ -1,0 +1,1 @@
+export const App = () => <h1>big boiler</h1>
