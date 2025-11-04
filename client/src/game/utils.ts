@@ -1,4 +1,5 @@
 import type { KAPLAYCtx, Vec2 } from "kaplay";
+import type { Player } from "./entities";
 
 export async function makeMap(k: KAPLAYCtx, name: string) {
     const mapData = await (await fetch(`./${name}.json`)).json();
@@ -39,4 +40,17 @@ export async function makeMap(k: KAPLAYCtx, name: string) {
     }
 
     return { map, spawnPoints }
+}
+
+
+
+export async function backFlip(k: KAPLAYCtx, player: Player) {
+    await k.tween(
+        player.angle,
+        360,
+        0.5,
+        (a) => player.angle = a,
+        k.easings.linear
+    )
+    player.angle = 0;
 }
