@@ -1,10 +1,14 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
-import { App } from './UI/index'
+import { UI } from './UI/index'
+import initGame from './game/setup'
 
-createRoot(document.getElementById('root')!).render(
+createRoot(document.getElementById('ui')!).render(
   <StrictMode>
-    <App />
+    <UI />
   </StrictMode>,
 )
+
+
+initGame()
