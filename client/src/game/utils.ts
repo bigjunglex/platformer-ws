@@ -42,6 +42,40 @@ export async function makeMap(k: KAPLAYCtx, name: string) {
     return { map, spawnPoints }
 }
 
+export function setControls(k: KAPLAYCtx, player: Player) {
+    k.onKeyDown((key) => {
+        switch (key) {
+            case "left":
+                player.direction = 'left';
+                player.flipX = true;
+                
+                for (const c of player.children) {
+                    if (c.tags.includes('melee')) null
+                    c.flipX = true;
+                }
+
+                player.move(-player.speed, 0);
+                break;
+            case "right":
+                player.direction = 'right';
+                player.flipX = false;
+
+                for (const c of player.children) {
+                    if (c.tags.includes('melee')) console.log('melee weapon')
+                    c.flipX = false;
+                }
+
+                player.move(player.speed, 0);
+                break;
+            case 'z':
+                break;
+            default:
+        }
+    })
+
+    k.onKeyPress((key) => key === 'x' ? player.doubleJump() : null)
+    k.onKeyPress((key) => key === 'c' ? player.trigger('attack') : null)
+}
 
 
 export async function backFlip(k: KAPLAYCtx, player: Player) {
