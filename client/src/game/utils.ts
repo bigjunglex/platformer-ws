@@ -58,6 +58,26 @@ export async function makeMap(k: KAPLAYCtx, name: string) {
             }
         }
 
+        if (layer.name === 'armor') {
+            for (const armor of layer.objects) {
+                const name = armor.name as string
+                map.add([
+                    k.sprite('assets', { frame: FRAMES.armor[name]}),
+                      k.area({
+                        shape: new k.Rect(
+                            k.vec2(0),
+                            HITBOXES?.armor?.[name].width ?? 64,
+                            HITBOXES?.armor?.[name].height ?? 64
+                        )
+                    }),
+                    k.pos(armor.x, armor.y),
+                    k.anchor('bot'),
+                    'item', 'armor', name
+                ])
+            }
+        }
+
+
     }
 
     return { map, spawnPoints }

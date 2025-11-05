@@ -61,7 +61,7 @@ export function createPlayer( k: KAPLAYCtx, pos: Vec2, frame: number ) {
          * so no new object reused ? <<<<<<
          */
         if (item.tags.includes('weapon')) {
-            type = item.tags.find(t => t !== 'item' && t !== 'weapon' && t !== '*' ) ?? 'sword';
+            type = item.tags.find(t => t !== 'item' && t !== 'weapon' && t !== '*') ?? 'sword';
             frame = FRAMES.weapons[type];
             offset = ITEM_OFFSETS.weapons[type];
             shape = new k.Rect(
@@ -71,7 +71,7 @@ export function createPlayer( k: KAPLAYCtx, pos: Vec2, frame: number ) {
             )
             isWeapon = true;
         } else {
-            type = item.tags.find(tag => tag !== 'item' && tag !== 'armor') ?? 'helmet_flat';
+            type = item.tags.find(t => t !== 'item' && t !== 'armor' && t !== '*') ?? 'helmet_flat';
             frame = FRAMES.armor[type];
             offset = ITEM_OFFSETS.armor[type];
             shape = null;
@@ -80,32 +80,34 @@ export function createPlayer( k: KAPLAYCtx, pos: Vec2, frame: number ) {
 
         const newItem = player.add([
             k.sprite('assets', { frame }),
-            shape ? k.area({ shape }) : null,
+            shape ? k.area({ shape }) : '',
             k.pos(offset.vec.x, offset.vec.y),
             k.anchor(offset.anchor),
             k.rotate(offset.angle),
             isWeapon ? 'weapon' : 'armor',
             type
-        ])
+        ]!)
 
-        newItem.onUpdate(() => {
-            if (player.direction === 'left') {
-                if (newItem.anchor === 'botleft') {
-                    newItem.anchor = 'botright';
+        if (isWeapon) {
+            newItem.onUpdate(() => {
+                if (player.direction === 'left') {
+                    if (newItem.anchor === 'botleft') {
+                        newItem.anchor = 'botright';
+                    }
+                    if (newItem.angle > 0) {
+                        newItem.angle = -offset.angle
+                    }
+                    if (newItem.area.offset.x === 0) {
+                        newItem.area.offset.x = newItem.area.offset.x - newItem.width / 2
+                    }
+                    return;
                 }
-                if (newItem.angle > 0) {
-                    newItem.angle = -offset.angle
-                }
-                if (newItem.area.offset.x === 0) {
-                    newItem.area.offset.x = newItem.area.offset.x - newItem.width / 2
-                }
-                return;
-            }
-            newItem.area.offset.x = 0;
-            newItem.angle = offset.angle;
-            newItem.anchor = 'botleft';
-        })
-
+                newItem.area.offset.x = 0;
+                newItem.angle = offset.angle;
+                newItem.anchor = 'botleft';
+            })
+        }
+            
         item.destroy();
     })
 
