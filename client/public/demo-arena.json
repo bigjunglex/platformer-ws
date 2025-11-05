@@ -28,6 +28,52 @@
         }, 
         {
          "draworder":"topdown",
+         "id":7,
+         "name":"weapons",
+         "objects":[
+                {
+                 "height":0,
+                 "id":44,
+                 "name":"sword",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":287,
+                 "y":380
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":8,
+         "name":"armor",
+         "objects":[
+                {
+                 "height":0,
+                 "id":49,
+                 "name":"helmet_flat",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":666,
+                 "y":296
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
          "id":5,
          "name":"colliders",
          "objects":[
@@ -228,17 +274,6 @@
                  "width":4.66666666666674,
                  "x":1146.66666666667,
                  "y":0
-                }, 
-                {
-                 "height":0,
-                 "id":38,
-                 "name":"",
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":0,
-                 "x":392,
-                 "y":-362
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -293,8 +328,8 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":7,
- "nextobjectid":42,
+ "nextlayerid":9,
+ "nextobjectid":51,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.8.2",

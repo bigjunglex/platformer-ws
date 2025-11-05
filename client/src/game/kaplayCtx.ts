@@ -9,7 +9,7 @@ function initKaplay() {
         global: false,
         canvas: ctx,
         debug: true,
-        debugKey: 'f1',
+        debugKey: 'f2',
         background: '#ececec',
     });
 }

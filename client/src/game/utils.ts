@@ -1,5 +1,6 @@
 import type { KAPLAYCtx, Vec2 } from "kaplay";
-import type { Player } from "./entities";
+import type { Item, Player } from "./entities";
+import { FRAMES, HITBOXES } from "./constants";
 
 export async function makeMap(k: KAPLAYCtx, name: string) {
     const mapData = await (await fetch(`./${name}.json`)).json();
@@ -37,6 +38,26 @@ export async function makeMap(k: KAPLAYCtx, name: string) {
                 spawnPoints[spawn.name] = [ k.vec2(spawn.x, spawn.y) ]
             }
         }
+
+        if (layer.name === 'weapons') {
+            for (const weapon of layer.objects) {
+                const name = weapon.name as string
+                map.add([
+                    k.sprite('assets', { frame: FRAMES.weapons[name]}),
+                    k.area({
+                        shape: new k.Rect(
+                            k.vec2(0),
+                            HITBOXES.weapons[name].width,
+                            HITBOXES.weapons[name].height
+                        )
+                    }),
+                    k.pos(weapon.x, weapon.y),
+                    k.anchor('bot'),
+                    'item', 'weapon', name
+                ])
+            }
+        }
+
     }
 
     return { map, spawnPoints }
@@ -49,8 +70,7 @@ export function setControls(k: KAPLAYCtx, player: Player) {
                 player.direction = 'left';
                 player.flipX = true;
                 
-                for (const c of player.children) {
-                    if (c.tags.includes('melee')) null
+                for (const c of player.children as Item[]) {
                     c.flipX = true;
                 }
 
@@ -60,8 +80,7 @@ export function setControls(k: KAPLAYCtx, player: Player) {
                 player.direction = 'right';
                 player.flipX = false;
 
-                for (const c of player.children) {
-                    if (c.tags.includes('melee')) console.log('melee weapon')
+                for (const c of player.children as Item[]) {
                     c.flipX = false;
                 }
 
