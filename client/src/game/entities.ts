@@ -84,23 +84,24 @@ export function createPlayer( k: KAPLAYCtx, pos: Vec2, frame: number ) {
             k.pos(offset.vec.x, offset.vec.y),
             k.anchor(offset.anchor),
             k.rotate(offset.angle),
-            isWeapon ? 'weapon' : 'armr',
+            isWeapon ? 'weapon' : 'armor',
             type
         ])
 
         newItem.onUpdate(() => {
             if (player.direction === 'left') {
-                newItem.pos = k.vec2(offset.vec.x, offset.vec.y)
                 if (newItem.anchor === 'botleft') {
                     newItem.anchor = 'botright';
                 }
                 if (newItem.angle > 0) {
                     newItem.angle = -offset.angle
                 }
-                console.log(newItem.anchor, newItem.angle)
+                if (newItem.area.offset.x === 0) {
+                    newItem.area.offset.x = newItem.area.offset.x - newItem.width / 2
+                }
                 return;
             }
-            newItem.pos = k.vec2(offset.vec.x, offset.vec.y);
+            newItem.area.offset.x = 0;
             newItem.angle = offset.angle;
             newItem.anchor = 'botleft';
         })
