@@ -1,3 +1,11 @@
 canvas {
     border: 1px solid black;
 }
+
+#ui-container {    
+   position: absolute;
+   top: 0;
+   left: 0;
+   border: 1px solid red;
+   z-index: 1;
+}

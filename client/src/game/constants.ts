@@ -33,7 +33,7 @@ export const GRAVITY = 1400;
 export const ITEM_OFFSETS: Offsets = {
     armor: {
         helmet_flat: {
-            vec: {x: 0, y: 10},
+            vec: { x: 0, y: 2 },
             anchor: 'bot',
             angle: 0
         }
@@ -43,6 +43,11 @@ export const ITEM_OFFSETS: Offsets = {
             vec: {x:0, y: 10},
             anchor: 'botleft',
             angle: 15
+        },
+        gun: {
+            vec: {x: 0, y:40},
+            anchor: 'botleft',
+            angle: 0
         }
     }
 }
@@ -80,6 +85,13 @@ export const HITBOXES: Hitboxes = {
             width: 32,
             height: 64,
         },
+        gun: {
+            vec: {
+                x: 0, y:0
+            },
+            width: 32,
+            height: 32
+        }
     },
     
 }

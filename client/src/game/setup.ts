@@ -12,7 +12,8 @@ export default async function initGame() {
     k.loadSprite('demo-arena',  './demo-arena.png');
     const { map, spawnPoints } = await makeMap(k, 'demo-arena')
     const squareSpawn = spawnPoints.square[0]!
-    
+    const roundSpawn = spawnPoints.round[0]!
+
     k.scene('demo-arena', () => {
         k.setGravity(GRAVITY);
         k.add([
@@ -20,10 +21,12 @@ export default async function initGame() {
             k.color(k.Color.fromHex('#ececec')),
             k.fixed(),
         ])
-        const player = createPlayer(k, squareSpawn, FRAMES.characters.greenCircle)
+        const player = createPlayer(k, squareSpawn, FRAMES.characters.redSquare)
+        const enemy = createPlayer(k, roundSpawn, FRAMES.characters.greenCircle)
 
         setControls(k, player)
         k.add(player)
+        k.add(enemy)
         k.add(map);
     })
 

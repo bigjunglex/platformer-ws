@@ -1,35 +1,46 @@
 import type { AnchorComp, AreaComp, GameObj, KAPLAYCtx, PosComp, Rect, RotateComp, SpriteComp, Vec2 } from "kaplay";
 import { backFlip } from "./utils";
 import { FRAMES, HITBOXES, ITEM_OFFSETS, type ItemOffset } from "./constants";
-
+import {  health, playerId } from "../store";
+import { getDefaultStore } from "jotai";
 export type Player = ReturnType<typeof createPlayer>
 export type Item = GameObj<SpriteComp | AreaComp | PosComp | RotateComp | AnchorComp | null>
 
-export function createPlayer( k: KAPLAYCtx, pos: Vec2, frame: number ) {
+export function createPlayer( k: KAPLAYCtx, pos: Vec2, frame: number) {
+    const store = getDefaultStore();
+    const id = crypto.randomUUID().substring(0, 6)
+
+
     const player = k.make([
         k.sprite('assets', { frame: frame }),
         k.area({ shape: new k.Rect(k.vec2(0,0), 32, 64) }),
         k.body(),
         k.pos(pos),
-        k.health(3),
+        k.health(5),
         k.opacity(1),
         k.doubleJump(1),
         k.rotate(),
         k.anchor('center'),
         {
             speed: 300,
-            id: frame,
             direction: 'right',
+            bigid: id
         },
-        'player'
+        'player',
+        id
     ])
 
+    
+    const updateHealth = () => store.set(health, {...store.get(health), [id]: player.hp()});
+
+    player.onAdd(updateHealth)
+    player.on('hurt', updateHealth)
+    player.on('heal', updateHealth)
+
+    
     player.onCollide('hazard', async () => {
-        if (player.hp() === 1) {
-            k.destroy(player)
-            return;;
-        }
         player.hurt();
+
         player.jump(800)
         backFlip(k, player)
         await k.tween(
@@ -112,7 +123,12 @@ export function createPlayer( k: KAPLAYCtx, pos: Vec2, frame: number ) {
     })
 
 
+    player.onUpdate(() => {
+        if (player.hp() === 0) {
+            k.destroy(player)
+            return;;
+        }
+    })
+
     return player
 }
-
-

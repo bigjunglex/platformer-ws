@@ -1,6 +1,9 @@
 import type { KAPLAYCtx, Vec2 } from "kaplay";
 import type { Item, Player } from "./entities";
 import { FRAMES, HITBOXES } from "./constants";
+import { getDefaultStore } from "jotai";
+import { playerId } from "../store";
+
 
 export async function makeMap(k: KAPLAYCtx, name: string) {
     const mapData = await (await fetch(`./${name}.json`)).json();
@@ -84,6 +87,9 @@ export async function makeMap(k: KAPLAYCtx, name: string) {
 }
 
 export function setControls(k: KAPLAYCtx, player: Player) {
+    const store = getDefaultStore();
+    store.set(playerId, player.bigid)
+
     k.onKeyDown((key) => {
         switch (key) {
             case "left":

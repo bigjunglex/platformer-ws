@@ -6,7 +6,7 @@ import initGame from './game/setup'
 
 createRoot(document.getElementById('ui')!).render(
   <StrictMode>
-    <UI />
+      <UI />
   </StrictMode>,
 )
 
