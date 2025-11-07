@@ -1,15 +1,15 @@
 import type { AnchorComp, AreaComp, GameObj, KAPLAYCtx, PosComp, Rect, RotateComp, SpriteComp, Vec2 } from "kaplay";
 import { backFlip } from "./utils";
 import { FRAMES, HITBOXES, ITEM_OFFSETS, type ItemOffset } from "./constants";
-import {  health, playerId } from "../store";
+import {  health } from "../store";
 import { getDefaultStore } from "jotai";
+
 export type Player = ReturnType<typeof createPlayer>
 export type Item = GameObj<SpriteComp | AreaComp | PosComp | RotateComp | AnchorComp | null>
 
 export function createPlayer( k: KAPLAYCtx, pos: Vec2, frame: number) {
     const store = getDefaultStore();
     const id = crypto.randomUUID().substring(0, 6)
-
 
     const player = k.make([
         k.sprite('assets', { frame: frame }),
@@ -24,7 +24,59 @@ export function createPlayer( k: KAPLAYCtx, pos: Vec2, frame: number) {
         {
             speed: 300,
             direction: 'right',
-            bigid: id
+            bigid: id,
+            isAttacking: false,
+            attack: async function() {
+                const player = this as Player;
+                const weapon = player.children.find(c => c.tags.includes('weapon'))
+
+
+                if (weapon && !player.isAttacking) {
+                    player.isAttacking = true;
+                    const startingPoint = weapon.angle
+                    const returnPoint = player.direction === 'right' ? startingPoint + 50 : startingPoint - 50;
+                    const swingPoint = player.direction === 'right' ? startingPoint - 40 : startingPoint + 40;
+                    const weaponHurter = (collision: GameObj<any>) => {
+                        if (player.isAttacking) {
+                            if (collision.id !== player.id && !collision.tags.includes('static')) {
+                                console.log('attack')
+                                collision.hurt()
+                            }
+                        }
+                    }
+
+                    weapon.on('collide', (c) => weaponHurter(c))
+
+
+                    await k.tween(
+                        startingPoint,
+                        swingPoint,
+                        0.3,
+                        (v) => weapon.angle = v
+                    )
+                    await k.tween(
+                        swingPoint,
+                        startingPoint,
+                        0.1,
+                        (v) => weapon.angle = v
+                    )
+
+                    await k.tween(
+                        startingPoint,
+                        returnPoint,
+                        0.1,
+                        (v) => weapon.angle = v
+                    )
+                    await k.tween(
+                        returnPoint,
+                        startingPoint,
+                        0.3,
+                        (v) => weapon.angle = v
+                    )
+                    player.isAttacking = false
+
+                } 
+            }
         },
         'player',
         id
@@ -122,6 +174,7 @@ export function createPlayer( k: KAPLAYCtx, pos: Vec2, frame: number) {
         item.destroy();
     })
 
+    
 
     player.onUpdate(() => {
         if (player.hp() === 0) {

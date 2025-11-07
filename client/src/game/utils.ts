@@ -26,6 +26,7 @@ export async function makeMap(k: KAPLAYCtx, name: string) {
                     k.body({ isStatic: true }),
                     k.pos(collider.x, collider.y),
                     collider.name !== 'hazard' ? 'platform' : 'hazard',
+                    'static'
                 ])
             }
             continue
@@ -56,7 +57,7 @@ export async function makeMap(k: KAPLAYCtx, name: string) {
                     }),
                     k.pos(weapon.x, weapon.y),
                     k.anchor('bot'),
-                    'item', 'weapon', name
+                    'item', 'weapon', name, 'static'
                 ])
             }
         }
@@ -75,7 +76,7 @@ export async function makeMap(k: KAPLAYCtx, name: string) {
                     }),
                     k.pos(armor.x, armor.y),
                     k.anchor('bot'),
-                    'item', 'armor', name
+                    'item', 'armor', name, 'static'
                 ])
             }
         }
@@ -119,7 +120,7 @@ export function setControls(k: KAPLAYCtx, player: Player) {
     })
 
     k.onKeyPress((key) => key === 'x' ? player.doubleJump() : null)
-    k.onKeyPress((key) => key === 'c' ? player.trigger('attack') : null)
+    k.onKeyPress((key) => key === 'c' ? player.attack() : null)
 }
 
 
