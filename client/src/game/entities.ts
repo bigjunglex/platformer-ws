@@ -1,4 +1,4 @@
-import type { AnchorComp, AreaComp, GameObj, KAPLAYCtx, PosComp, Rect, RotateComp, SpriteComp, Vec2 } from "kaplay";
+import type { AnchorComp, AreaComp, Collision, GameObj, KAPLAYCtx, PosComp, Rect, RotateComp, SpriteComp, Vec2 } from "kaplay";
 import { backFlip } from "./utils";
 import { FRAMES, HITBOXES, ITEM_OFFSETS, type ItemOffset } from "./constants";
 import {  health } from "../store";
@@ -36,17 +36,6 @@ export function createPlayer( k: KAPLAYCtx, pos: Vec2, frame: number) {
                     const startingPoint = weapon.angle
                     const returnPoint = player.direction === 'right' ? startingPoint + 50 : startingPoint - 50;
                     const swingPoint = player.direction === 'right' ? startingPoint - 40 : startingPoint + 40;
-                    const weaponHurter = (collision: GameObj<any>) => {
-                        if (player.isAttacking) {
-                            if (collision.id !== player.id && !collision.tags.includes('static')) {
-                                console.log('attack')
-                                collision.hurt()
-                            }
-                        }
-                    }
-
-                    weapon.on('collide', (c) => weaponHurter(c))
-
 
                     await k.tween(
                         startingPoint,
@@ -83,32 +72,49 @@ export function createPlayer( k: KAPLAYCtx, pos: Vec2, frame: number) {
     ])
 
     
+    
     const updateHealth = () => store.set(health, {...store.get(health), [id]: player.hp()});
 
     player.onAdd(updateHealth)
     player.on('hurt', updateHealth)
     player.on('heal', updateHealth)
 
-    
-    player.onCollide('hazard', async () => {
-        player.hurt();
-
-        player.jump(800)
-        backFlip(k, player)
+    player.on('hurt', async () => {
         await k.tween(
             player.opacity,
             0,
-            0.05,
+            0.1,
             (val) => (player.opacity = val),
             k.easings.linear
         )
         await k.tween(
             player.opacity,
             1,
-            0.05,
+            0.1,
             (val) => (player.opacity = val),
             k.easings.linear
         )
+        await k.tween(
+            player.opacity,
+            0,
+            0.1,
+            (val) => (player.opacity = val),
+            k.easings.linear
+        )
+        await k.tween(
+            player.opacity,
+            1,
+            0.1,
+            (val) => (player.opacity = val),
+            k.easings.linear
+        )
+    })
+
+    
+    player.onCollide('hazard', async () => {
+        player.hurt();
+        player.jump(800)
+        backFlip(k, player)
     })
 
     player.onCollide('item', (item) => {
@@ -168,6 +174,13 @@ export function createPlayer( k: KAPLAYCtx, pos: Vec2, frame: number) {
                 newItem.area.offset.x = 0;
                 newItem.angle = offset.angle;
                 newItem.anchor = 'botleft';
+            })
+
+            newItem.onCollide('player', (col: GameObj<any>) => {
+                if (col.id !== player.id) {
+                    col.hurt()
+                    console.log(col.hp())
+                }
             })
         }
             

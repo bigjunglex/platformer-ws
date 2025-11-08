@@ -1,6 +1,5 @@
 import { useAtomValue } from "jotai"
 import { health, playerId } from "../../../store"
-import { useEffect } from "react";
 
 export const HealthBar = () => {
     const id = useAtomValue(playerId)!;
