@@ -2,7 +2,7 @@ import type { KAPLAYCtx, Vec2 } from "kaplay";
 import type { Item, Player } from "./entities";
 import { FRAMES, HITBOXES } from "./constants";
 import { getDefaultStore } from "jotai";
-import { playerId } from "../store";
+import { playerId } from "../shared/store";
 
 
 export async function makeMap(k: KAPLAYCtx, name: string) {

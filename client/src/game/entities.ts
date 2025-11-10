@@ -1,7 +1,7 @@
 import type { AnchorComp, AreaComp, Collision, GameObj, KAPLAYCtx, PosComp, Rect, RotateComp, SpriteComp, Vec2 } from "kaplay";
 import { backFlip } from "./utils";
 import { FRAMES, HITBOXES, ITEM_OFFSETS, type ItemOffset } from "./constants";
-import {  health } from "../store";
+import {  health, connection } from "../shared/store";
 import { getDefaultStore } from "jotai";
 
 export type Player = ReturnType<typeof createPlayer>
@@ -190,6 +190,12 @@ export function createPlayer( k: KAPLAYCtx, pos: Vec2, frame: number) {
     
 
     player.onUpdate(() => {
+        const ws = store.get(connection);
+        const id = player.bigid;
+        const data = `[${id}]`+ player.pos.toString() 
+        
+        ws?.send(data)
+
         if (player.hp() === 0) {
             k.destroy(player)
             return;;
