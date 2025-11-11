@@ -9,5 +9,3 @@ createRoot(document.getElementById('ui')!).render(
       <UI />
   </StrictMode>,
 )
-
-initGame();

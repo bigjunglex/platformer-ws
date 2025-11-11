@@ -1,10 +1,10 @@
 import { useAtom } from "jotai";
-import { connection, wsId } from "../../../shared/store";
+import { connection, playerId } from "../../../shared/store";
 import { useEffect, useState } from "react";
 
 export function Connection() {
     const [ws, setWs] = useAtom(connection);
-    const [id, setId] = useAtom(wsId);
+    const [id, setId] = useAtom(playerId);
     const [connected, setConnected] = useState(false)
     const url = import.meta.env.VITE_WS_URL;
 

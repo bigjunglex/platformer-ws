@@ -134,3 +134,18 @@ export async function backFlip(k: KAPLAYCtx, player: Player) {
     )
     player.angle = 0;
 }
+
+export async function getItem(item: string | null): Promise<string> {
+    return new Promise(async (resolve, reject) => {
+        try {
+            for (let i = 0; i < 100; i++) {
+                if (item) resolve(item);
+                await new Promise(resolve => setTimeout(resolve, 100))
+            }
+        } catch (error) {
+            reject(error)
+        }
+
+    })
+    
+}

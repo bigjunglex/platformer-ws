@@ -1,4 +1,4 @@
-import type { AnchorComp, AreaComp, Collision, GameObj, KAPLAYCtx, PosComp, Rect, RotateComp, SpriteComp, Vec2 } from "kaplay";
+import type { AnchorComp, AreaComp, GameObj, KAPLAYCtx, PosComp, Rect, RotateComp, SpriteComp, Vec2 } from "kaplay";
 import { backFlip } from "./utils";
 import { FRAMES, HITBOXES, ITEM_OFFSETS, type ItemOffset } from "./constants";
 import {  health, connection } from "../shared/store";
@@ -7,10 +7,8 @@ import { getDefaultStore } from "jotai";
 export type Player = ReturnType<typeof createPlayer>
 export type Item = GameObj<SpriteComp | AreaComp | PosComp | RotateComp | AnchorComp | null>
 
-export function createPlayer( k: KAPLAYCtx, pos: Vec2, frame: number) {
+export function createPlayer( k: KAPLAYCtx, pos: Vec2, frame: number, id: string) {
     const store = getDefaultStore();
-    const id = crypto.randomUUID().substring(0, 6)
-
     const player = k.make([
         k.sprite('assets', { frame: frame }),
         k.area({ shape: new k.Rect(k.vec2(0,0), 32, 64) }),
