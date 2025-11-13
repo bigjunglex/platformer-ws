@@ -51,6 +51,7 @@ const rooms: Room[] = [];
 const wss = new WebSocketServer({ port });
 wss.on('connection', (ws: WebSocket) => {
     const id = generateID();
+    const roomId = generateID();
     //rewrite in spritegetter
     const sprite = sprites[--i];
     if (i === 0) {
@@ -64,8 +65,6 @@ wss.on('connection', (ws: WebSocket) => {
 
     if (!room) {
         const state = createState();
-        
-
         state.players[id] = {
             pos: { x: 0, y: 0 },
             health: 5,
@@ -74,7 +73,7 @@ wss.on('connection', (ws: WebSocket) => {
 
         room = {
             users: [ user ],
-            id: generateID(),
+            id: roomId,
             state
         }
         rooms.push(room)
@@ -91,25 +90,22 @@ wss.on('connection', (ws: WebSocket) => {
     const response = JSON.stringify(room.state) + '||' + id 
 
     ws.send(response)
+
+    for (const user of room.users) {
+        user?.ws.send(JSON.stringify(room.state))
+    }
     
     
     ws.on('error', console.error);
     ws.on('message', (data) => {
-        /**asks for validation checks maybe???  */
-        const currRoom = rooms.find(r => r.users.find(u => u?.id === id))!;
         const snapshot = JSON.parse(data.toString());
-        currRoom.state = snapshot
+        room.state = snapshot
+        if (room.users.length < 2) return;
         
-        for (const user of currRoom.users) {
-            if (user?.id !== id) {
-                user?.ws.send(data)
-            }
+        for (const user of room.users) {
+            user?.ws.send(data.toString())
         }
     })
-
-
-    console.log('[USERS]: new User { %s }', id)
-    console.log(JSON.stringify(room.state))
 })
 
 wss.on('listening', () => {
