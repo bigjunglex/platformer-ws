@@ -1,7 +1,7 @@
 import type { KAPLAYCtx, LoadSpriteOpt, Vec2 } from "kaplay";
 import k from "./kaplayCtx";
 import { makeMap, setControls } from "./utils";
-import { createPlayer } from "./entities";
+import { createPlayer, type Player } from "./entities";
 import { FRAMES, GRAVITY } from "./constants";
 import { getDefaultStore } from "jotai";
 import { playerId, connection, gameState } from "../shared/store";
@@ -30,19 +30,27 @@ export default async function initGame() {
         addPlayersFromState(k, store.get(gameState)!, ownId, squareSpawn)
 
         k.onUpdate(() => {
-            if (k.get('player').length !== Object.keys(store.get(gameState)?.players!).length) {
-                addPlayersFromState(k, store.get(gameState)!, ownId, squareSpawn)
+            const players = k.get('player');
+            const state = store.get(gameState);
+            const ids = Object.keys(state?.players!);
+            
+            if (players.length !== ids.length) {
+                addPlayersFromState(k, store.get(gameState)!, ownId, squareSpawn);
             }
-            // const curr = store.get(gameState)!;
-            // const snapshot = JSON.stringify(curr);
-            // ws?.send(snapshot)
+            
+            if (players.length > 1) {
+                const enemy = k.get('enemy')[0] as Player;
+                const enemyState = state?.players[enemy.bigid];
+                const enemyVec = new k.Vec2(enemyState?.pos.x, enemyState?.pos.y);
+                enemy.moveTo(enemyVec)
+            }
+            
+            ws?.send(JSON.stringify(store.get(gameState)))
         })
     }) 
     
     k.go('demo-arena')
 }
-
-
 
 function addPlayersFromState( k:KAPLAYCtx, state:GameState, ownId: string, spawn: Vec2) {
         for (const [id, player] of Object.entries(state?.players!)) {
@@ -52,6 +60,8 @@ function addPlayersFromState( k:KAPLAYCtx, state:GameState, ownId: string, spawn
             k.add(entity)
             if (id === ownId) {
                 setControls(k, entity)
+            } else {
+                entity.tag('enemy')
             }
         }
 }

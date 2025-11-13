@@ -9,6 +9,7 @@ export type Item = GameObj<SpriteComp | AreaComp | PosComp | RotateComp | Anchor
 export type PlayerParam = Parameters<typeof createPlayer>
 
 export function createPlayer( k: KAPLAYCtx, pos: Vec2, frame: number, id: string) {
+    const store = getDefaultStore();
     const player = k.make([
         k.sprite('assets', { frame: frame }),
         k.area({ shape: new k.Rect(k.vec2(0,0), 32, 64) }),
@@ -178,13 +179,27 @@ export function createPlayer( k: KAPLAYCtx, pos: Vec2, frame: number, id: string
         item.destroy();
     })
 
-    
+    player.onHurt(() => {
+        const prev = {...store.get(gameState)!};
+        prev.players[id].health = player.hp();
+        store.set(gameState, prev)
+    })
+
 
     player.onUpdate(() => {
         if (player.hp() === 0) {
             k.destroy(player)
             return
         }
+        const stateHp = store.get(gameState)?.players[id].health!
+        if (player.hp() !== stateHp) player.setHP(stateHp);
+        const prev = { ...store.get(gameState)! };
+        prev.players[id].pos = {
+            x: player.pos.x,
+            y: player.pos.y
+        }
+            
+        store.set(gameState, prev)
     })
 
     return player

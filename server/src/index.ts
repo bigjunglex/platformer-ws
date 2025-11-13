@@ -52,15 +52,12 @@ const wss = new WebSocketServer({ port });
 wss.on('connection', (ws: WebSocket) => {
     const id = generateID();
     const roomId = generateID();
-    //rewrite in spritegetter
+    //sprite kostil'
     const sprite = sprites[--i];
-    if (i === 0) {
-        i = sprites.length
-    }
+    if (i === 0) { i = sprites.length }
 
     const user: User = { ws, id };
-
-    //rewrite in roomfinder
+    // nado norm rooms sdelat' budet
     let room:Room = rooms.find(r => r.users.length === 1)!;
 
     if (!room) {
@@ -88,22 +85,27 @@ wss.on('connection', (ws: WebSocket) => {
     }
     
     const response = JSON.stringify(room.state) + '||' + id 
-
     ws.send(response)
 
     for (const user of room.users) {
         user?.ws.send(JSON.stringify(room.state))
     }
     
-    
     ws.on('error', console.error);
     ws.on('message', (data) => {
-        const snapshot = JSON.parse(data.toString());
-        room.state = snapshot
+        const snapshot = JSON.parse(data.toString()) as GameState;
+        // vozmojno big problema 
+        room.state.players = {
+            ...room.state.players,
+            [id]: snapshot.players[id]
+        }
+
         if (room.users.length < 2) return;
         
         for (const user of room.users) {
-            user?.ws.send(data.toString())
+            if (user?.id !== id) {
+                user?.ws.send(JSON.stringify(room.state))
+            }
         }
     })
 })

@@ -3,7 +3,7 @@ type Position = {
     y: number;
 }
 
-type Player = {
+type PlayerStore = {
     pos: Position;
     health: number;
     sprite: string;
@@ -17,7 +17,7 @@ type Loot = {
 }
 
 type GameState = {
-    players: { [key: string]: Player };
+    players: { [key: string]: PlayerStore };
     loot: Loot[];
 }
 
