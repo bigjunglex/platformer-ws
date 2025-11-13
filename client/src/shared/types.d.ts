@@ -5,6 +5,7 @@ type Position = {
 
 type PlayerStore = {
     pos: Position;
+    direction: 'right' | 'left';
     health: number;
     sprite: string;
     

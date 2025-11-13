@@ -42,6 +42,13 @@ export default async function initGame() {
                 const enemy = k.get('enemy')[0] as Player;
                 const enemyState = state?.players[enemy.bigid];
                 const enemyVec = new k.Vec2(enemyState?.pos.x, enemyState?.pos.y);
+                const dir = enemyState?.direction!
+                if  (dir === 'right') {
+                    enemy.flipX = false
+                } else {
+                    enemy.flipX = true
+                }
+                enemy.direction = dir
                 enemy.moveTo(enemyVec)
             }
             

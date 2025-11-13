@@ -9,6 +9,7 @@ type Position = {
 
 type Player = {
     pos: Position;
+    direction: 'right' | 'left';
     health: number;
     sprite: string;
     
@@ -64,6 +65,7 @@ wss.on('connection', (ws: WebSocket) => {
         const state = createState();
         state.players[id] = {
             pos: { x: 0, y: 0 },
+            direction: 'right',
             health: 5,
             sprite
         }
@@ -77,6 +79,7 @@ wss.on('connection', (ws: WebSocket) => {
     } else {
         room.state.players[id] = {
             pos: { x: 0, y: 0 },
+            direction: 'right',
             health: 5,
             sprite
         }
