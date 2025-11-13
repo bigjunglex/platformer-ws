@@ -2,7 +2,7 @@ import type { AnchorComp, AreaComp, GameObj, KAPLAYCtx, PosComp, Rect, RotateCom
 import { backFlip } from "./utils";
 import { FRAMES, HITBOXES, ITEM_OFFSETS, type ItemOffset } from "./constants";
 import { getDefaultStore } from "jotai";
-import { gameState } from "../shared/store";
+import { gameState, playerId } from "../shared/store";
 
 export type Player = ReturnType<typeof createPlayer>
 export type Item = GameObj<SpriteComp | AreaComp | PosComp | RotateComp | AnchorComp | null>
@@ -10,6 +10,7 @@ export type PlayerParam = Parameters<typeof createPlayer>
 
 export function createPlayer( k: KAPLAYCtx, pos: Vec2, frame: number, id: string) {
     const store = getDefaultStore();
+    const ownId = store.get(playerId)
     const player = k.make([
         k.sprite('assets', { frame: frame }),
         k.area({ shape: new k.Rect(k.vec2(0,0), 32, 64) }),
@@ -194,9 +195,11 @@ export function createPlayer( k: KAPLAYCtx, pos: Vec2, frame: number, id: string
         const stateHp = store.get(gameState)?.players[id].health!
         if (player.hp() !== stateHp) player.setHP(stateHp);
         const prev = { ...store.get(gameState)! };
-        prev.players[id].pos = {
-            x: player.pos.x,
-            y: player.pos.y
+        if (id === ownId) {
+            prev.players[id].pos = {
+                x: player.pos.x,
+                y: player.pos.y
+            }
         }
             
         store.set(gameState, prev)

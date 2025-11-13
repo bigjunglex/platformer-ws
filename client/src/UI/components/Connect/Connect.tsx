@@ -5,7 +5,7 @@ import { useEffect,  useState } from "react";
 export function Connection() {
     const [ws, setWs] = useAtom(connection);
     const [id, setId] = useAtom(playerId);
-    const [gState, setGState] = useAtom(gameState)
+    const [_, setGState] = useAtom(gameState)
     const [connected, setConnected] = useState(false)
     const url = import.meta.env.VITE_WS_URL;
 
