@@ -9,6 +9,9 @@
 - [ ] weapon switch
 - [ ] projectile logic + ammo implementation
 
+<!-- NOTES
+    NEED GLOBAL STATE 
+ -->
 
 ### WebSockets 
 - [ ] Figure out what should be send per tick, decide on data frame

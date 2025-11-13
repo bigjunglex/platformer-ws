@@ -1,11 +1,14 @@
 import { useAtomValue } from "jotai"
-import { health, playerId } from "../../../shared/store"
+import { playerId, gameState } from "../../../shared/store"
 
 export const HealthBar = () => {
     const id = useAtomValue(playerId)!;
-    const hpStore = useAtomValue(health);
+    const state = useAtomValue(gameState);
     
+    const health = state?.players[id]?.health;
+
+
     return (
-        <h2> ♥️: { hpStore[id] ?? '—' }</h2>
+        <h2> ♥️: { health ?? '—' }</h2>
     ) 
-}
+} 

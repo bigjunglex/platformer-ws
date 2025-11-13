@@ -1,10 +1,11 @@
 import { useAtom } from "jotai";
-import { connection, playerId } from "../../../shared/store";
-import { useEffect, useState } from "react";
+import { connection, playerId, gameState } from "../../../shared/store";
+import { useEffect,  useState } from "react";
 
 export function Connection() {
     const [ws, setWs] = useAtom(connection);
     const [id, setId] = useAtom(playerId);
+    const [gState, setGState] = useAtom(gameState)
     const [connected, setConnected] = useState(false)
     const url = import.meta.env.VITE_WS_URL;
 
@@ -21,13 +22,22 @@ export function Connection() {
         connection.onmessage = ( event ) => {
             const data = event.data;
             if ( !gotId ) {
-                setId(data);
+                const [state, id] = data.split('||')
+                const snapshot = JSON.parse(state)
+                console.log(snapshot, id)
+                setId(id);
+                setGState(snapshot)
                 gotId = true;
-                console.log('[ID]: %s', data)
-                return;
+            } else {
+                console.log(gotId)
+                const snapshot = JSON.parse(data) as GameState;
+                setGState(snapshot)
+                for (const [id, player] of Object.entries(snapshot.players)) {
+                    console.log('[STATE]: %s --- %s', id, JSON.stringify(player))
+                }
             }
+            
 
-            console.log('[RECIEVED]: %s', data)
         }
 
         return () => {

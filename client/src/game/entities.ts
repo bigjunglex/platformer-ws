@@ -1,14 +1,14 @@
 import type { AnchorComp, AreaComp, GameObj, KAPLAYCtx, PosComp, Rect, RotateComp, SpriteComp, Vec2 } from "kaplay";
 import { backFlip } from "./utils";
 import { FRAMES, HITBOXES, ITEM_OFFSETS, type ItemOffset } from "./constants";
-import {  health, connection } from "../shared/store";
 import { getDefaultStore } from "jotai";
+import { gameState } from "../shared/store";
 
 export type Player = ReturnType<typeof createPlayer>
 export type Item = GameObj<SpriteComp | AreaComp | PosComp | RotateComp | AnchorComp | null>
+export type PlayerParam = Parameters<typeof createPlayer>
 
 export function createPlayer( k: KAPLAYCtx, pos: Vec2, frame: number, id: string) {
-    const store = getDefaultStore();
     const player = k.make([
         k.sprite('assets', { frame: frame }),
         k.area({ shape: new k.Rect(k.vec2(0,0), 32, 64) }),
@@ -69,13 +69,6 @@ export function createPlayer( k: KAPLAYCtx, pos: Vec2, frame: number, id: string
         id
     ])
 
-    
-    
-    const updateHealth = () => store.set(health, {...store.get(health), [id]: player.hp()});
-
-    player.onAdd(updateHealth)
-    player.on('hurt', updateHealth)
-    player.on('heal', updateHealth)
 
     player.on('hurt', async () => {
         await k.tween(
@@ -188,15 +181,9 @@ export function createPlayer( k: KAPLAYCtx, pos: Vec2, frame: number, id: string
     
 
     player.onUpdate(() => {
-        const ws = store.get(connection);
-        const id = player.bigid;
-        const data = `[${id}]`+ player.pos.toString() 
-        
-        ws?.send(data)
-
         if (player.hp() === 0) {
             k.destroy(player)
-            return;;
+            return
         }
     })
 
