@@ -8,7 +8,7 @@ type PlayerStore = {
     direction: 'right' | 'left';
     health: number;
     sprite: string;
-    
+    isAttacking: boolean;    
 }
 
 type Loot = {

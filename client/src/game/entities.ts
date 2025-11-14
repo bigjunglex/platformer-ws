@@ -201,6 +201,7 @@ export function createPlayer( k: KAPLAYCtx, pos: Vec2, frame: number, id: string
                 y: player.pos.y
             }
             prev.players[id].direction = player.direction as 'right' | 'left';
+            prev.players[id].isAttacking = player.isAttacking;
         }
             
         store.set(gameState, prev)

@@ -1,4 +1,4 @@
-import { WebSocketServer, type WebSocket} from "ws";
+import { WebSocketServer, type WebSocket } from "ws";
 
 type User = { ws: WebSocket, id: string }
 
@@ -12,7 +12,7 @@ type Player = {
     direction: 'right' | 'left';
     health: number;
     sprite: string;
-    
+    isAttacking: boolean;
 }
 
 type Loot = {
@@ -67,7 +67,8 @@ wss.on('connection', (ws: WebSocket) => {
             pos: { x: 0, y: 0 },
             direction: 'right',
             health: 5,
-            sprite
+            sprite,
+            isAttacking: false,
         }
 
         room = {
@@ -81,7 +82,8 @@ wss.on('connection', (ws: WebSocket) => {
             pos: { x: 0, y: 0 },
             direction: 'right',
             health: 5,
-            sprite
+            sprite,
+            isAttacking: false,
         }
 
         room.users.push(user)

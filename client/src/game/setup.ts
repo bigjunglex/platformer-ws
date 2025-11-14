@@ -50,6 +50,10 @@ export default async function initGame() {
                 }
                 enemy.direction = dir
                 enemy.moveTo(enemyVec)
+
+                if (enemyState?.isAttacking) {
+                    enemy.attack()
+                }
             }
             
             ws?.send(JSON.stringify(store.get(gameState)))
