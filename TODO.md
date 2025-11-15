@@ -5,13 +5,14 @@
 - [x] attack animation + logic for sword
 - [x] Hit + enemy/player logic
 ---------- AFTER ADDED MULTIPLAYER -------
-- [ ] ranged weapon
-- [ ] weapon switch
-- [ ] projectile logic + ammo implementation
+- [x] ranged weapon - single player branch
+- [x] projectile logic + ammo implementation single player branch
 
-<!-- NOTES
-    NEED GLOBAL STATE 
- -->
+- [ ] ranged weapon - sync
+- [ ] projectile logic + ammo implementation sync
+
+- [ ] weapon switch single player branch
+- [ ] weapon switch sync
 
 ### WebSockets 
 - [x] Figure out what should be send per tick, decide on data frame
@@ -20,7 +21,7 @@
 - [x] rooms base
 
 ### STAGES
-
+<!-- NO POINT IN IMPLEMENTAITO UNTIL OK NETWORK -->
 - [ ] load screen
 - [ ] connect / make room / current room id
 - [ ] wait + ready check

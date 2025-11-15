@@ -7,6 +7,7 @@ type PlayerStore = {
     pos: Position;
     direction: 'right' | 'left';
     health: number;
+    ammo: number | null;
     sprite: string;
     isAttacking: boolean;    
 }

@@ -149,3 +149,38 @@ export async function getItem(item: string | null): Promise<string> {
     })
     
 }
+
+/**
+ * use for bullets id guess or mb 
+ *  explosive particles?
+ * @constructor
+ * @param k KAPLAYCtx
+ * @param create component factory fn
+ *  
+ */
+export class ComponentPool<T> {
+    private pool: Array<T>;
+    private create: (k:KAPLAYCtx) => T  
+    private k: KAPLAYCtx
+
+    constructor( k: KAPLAYCtx, createFn: typeof this.create ) {
+        this.pool = [];
+        this.create = createFn
+        this.k = k;
+    }
+
+    get(): T {
+        const pool = this.pool;
+        if (pool.length) {
+            return pool.pop()!;
+        } else {
+            const item = this.create(this.k)
+            return item
+        }
+    }
+
+    give(item: T) : void {
+        // reset object???
+        this.pool.push(item);
+    }
+}

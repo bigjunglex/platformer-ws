@@ -42,6 +42,18 @@
                  "width":0,
                  "x":287,
                  "y":380
+                }, 
+                {
+                 "height":0,
+                 "id":52,
+                 "name":"pistol",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":984,
+                 "y":426
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -329,7 +341,7 @@
          "y":0
         }],
  "nextlayerid":9,
- "nextobjectid":52,
+ "nextobjectid":54,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.8.2",

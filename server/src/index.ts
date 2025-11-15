@@ -11,6 +11,7 @@ type Player = {
     pos: Position;
     direction: 'right' | 'left';
     health: number;
+    ammo: number | null;
     sprite: string;
     isAttacking: boolean;
 }
@@ -67,6 +68,7 @@ wss.on('connection', (ws: WebSocket) => {
             pos: { x: 0, y: 0 },
             direction: 'right',
             health: 5,
+            ammo: null,
             sprite,
             isAttacking: false,
         }
@@ -83,6 +85,7 @@ wss.on('connection', (ws: WebSocket) => {
             direction: 'right',
             health: 5,
             sprite,
+            ammo: null,
             isAttacking: false,
         }
 

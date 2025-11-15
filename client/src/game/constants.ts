@@ -40,13 +40,18 @@ export const ITEM_OFFSETS: Offsets = {
     },
     weapons: {
         sword: {
-            vec: {x:0, y: 10},
+            vec: { x: 0, y: 10 },
             anchor: 'botleft',
             angle: 15
         },
         gun: {
-            vec: {x: 0, y:40},
+            vec: { x: 0, y: 40 },
             anchor: 'botleft',
+            angle: 0
+        },
+        pistol: {
+            vec: { x: 0, y: 40 },
+            anchor: 'center',
             angle: 0
         }
     }
@@ -73,25 +78,44 @@ export const FRAMES: Frames = {
     },
     armor: {
         helmet_flat: 8
-    }       
+    },
+    projectile: {
+        bullet: 44
+    }
 }
 
 export const HITBOXES: Hitboxes = {
     weapons: {
         sword: {
             vec: {
-                x:15, y:0
+                x: 15, y: 0
             },
             width: 32,
             height: 64,
         },
         gun: {
             vec: {
-                x: 0, y:0
+                x: 0, y: 0
+            },
+            width: 32,
+            height: 32
+        },
+        pistol: {
+            vec: {
+                x: 0, y: 0
             },
             width: 32,
             height: 32
         }
     },
-    
+
+    projectiles: {
+        bullet: {
+            vec: {
+                x: 0, y: 10
+            },
+            width: 16,
+            height: 16
+        }
+    }
 }
