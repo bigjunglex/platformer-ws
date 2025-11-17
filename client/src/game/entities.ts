@@ -107,7 +107,7 @@ export function createPlayer( k: KAPLAYCtx, pos: Vec2, frame: number, id: string
 
         if ( type === 'gun' || type === 'pistol' ) {
             const prev = store.get(gameState)!;
-            prev.players[ownId!].ammo = 5;
+            prev.players[id].ammo = 5;
             store.set(gameState, prev)
         }
 
@@ -152,12 +152,8 @@ export function createPlayer( k: KAPLAYCtx, pos: Vec2, frame: number, id: string
 
             if (newItem.tags.includes('gun') || newItem.tags.includes('pistol')) {
                 newItem.attack = getRangedAttack(k, player, newItem)
+                newItem.tag('ranged');                
                 newItem.collisionIgnore = ['*'];
-
-                newItem.onUpdate(() => {
-                    const ammo = store.get(gameState)?.players[id].ammo;
-                    if (!ammo) newItem.destroy(); 
-                })
             }
         }
             
@@ -165,15 +161,16 @@ export function createPlayer( k: KAPLAYCtx, pos: Vec2, frame: number, id: string
     })
 
     player.onHurt(() => {
-        const prev = store.get(gameState)!;
+        const prev = {...store.get(gameState)!};
         prev.players[id].health = player.hp();
         store.set(gameState, prev)
     })
 
     player.on('ammo-drain', (ammo:number) => {
-        const prev = store.get(gameState)!;
+        const prev = {...store.get(gameState)!};
         const newAmmo = prev.players[id].ammo! - ammo; 
         prev.players[id].ammo = newAmmo ? newAmmo : null;
+
         store.set(gameState, prev)
     })
 

@@ -8,8 +8,8 @@
 - [x] ranged weapon - single player branch
 - [x] projectile logic + ammo implementation single player branch
 
-- [ ] ranged weapon - sync
-- [ ] projectile logic + ammo implementation sync
+- [x]ranged weapon - sync
+- [x] projectile logic + ammo implementation sync
 
 - [ ] weapon switch single player branch
 - [ ] weapon switch sync

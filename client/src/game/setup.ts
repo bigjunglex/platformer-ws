@@ -45,8 +45,14 @@ export default async function initGame() {
                 const dir = enemyState?.direction!
                 if  (dir === 'right') {
                     enemy.flipX = false
+                    for (const c of enemy.children) {
+                        c.flipX = false
+                    }
                 } else {
                     enemy.flipX = true
+                    for (const c of enemy.children) {
+                        c.flipX = true
+                    }
                 }
                 enemy.direction = dir
                 enemy.moveTo(enemyVec)
