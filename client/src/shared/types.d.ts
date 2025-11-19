@@ -24,7 +24,4 @@ type GameState = {
 }
 
 
-const emptyState: GameState = {
-    players: [],
-    items: []
-}
+type PlayerFild = keyof PlayerStore

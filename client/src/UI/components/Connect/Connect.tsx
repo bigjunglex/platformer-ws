@@ -4,16 +4,16 @@ import { useEffect,  useState } from "react";
 
 export function Connection() {
     const [ws, setWs] = useAtom(connection);
-    const [id, setId] = useAtom(playerId);
-    const [_, setGState] = useAtom(gameState)
+    const [ownId, setOwnId] = useAtom(playerId);
+    const [gState, setGState] = useAtom(gameState)
     const [connected, setConnected] = useState(false)
     const url = import.meta.env.VITE_WS_URL;
 
     useEffect(() => {
         if ( connected ) return;
         const connection = new WebSocket(url);
-        let gotId = false;
-
+        let gotId:string;
+    
         connection.onopen = () => {
             setWs(connection)
             setConnected(true)
@@ -22,22 +22,29 @@ export function Connection() {
         connection.onmessage = ( event ) => {
             const data = event.data;
             if ( !gotId ) {
-                const [state, id] = data.split('||')
+                const [ state, id ] = data.split('||')
                 const snapshot = JSON.parse(state)
                 console.log(snapshot, id)
-                setId(id);
+                setOwnId(id);
                 setGState(snapshot)
-                gotId = true;
+                gotId = id;
             } else {
                 const snapshot = JSON.parse(data) as GameState;
-                setGState(snapshot)
-                console.log('[STATE]: \n\n', JSON.stringify(snapshot.players));
+                console.log(gotId)
+                const enemyStateId = Object.keys(snapshot.players).find(k => k !== gotId)!;
+                console.log(enemyStateId)
+                setGState(prev => ({
+                    players: {
+                        ...prev?.players,
+                        [enemyStateId]: snapshot.players[enemyStateId]
+                    },
+                    loot: prev?.loot!
+                }))
             }
         }
 
         return () => {
             if (connection.readyState < 2) {
-                setId(null);
                 setConnected(false);
                 connection.close();
             }
@@ -45,6 +52,6 @@ export function Connection() {
     }, [])
 
     return (
-        <span>{ ws && id ? id : 'Getting connection...'}</span>
+        <span>{ ws && ownId ? ownId : 'Getting connection...'}</span>
     )
 }

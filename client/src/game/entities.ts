@@ -11,6 +11,7 @@ export type PlayerParam = Parameters<typeof createPlayer>
 export function createPlayer( k: KAPLAYCtx, pos: Vec2, frame: number, id: string) {
     const store = getDefaultStore();
     const ownId = store.get(playerId);
+    console.log(ownId)
     const player = k.make([
         k.sprite('assets', { frame: frame }),
         k.area({ shape: new k.Rect(k.vec2(0,0), 32, 64) }),
@@ -26,7 +27,8 @@ export function createPlayer( k: KAPLAYCtx, pos: Vec2, frame: number, id: string
             direction: 'right',
             bigid: id,
             isAttacking: false,
-            ammo: null,
+            ammo: null as null|number,
+            weapon: null as Item|null,
             attack: async function() {
                 const player = this as Player;
                 const weapon = player.children.find(c => c.tags.includes('weapon'));
@@ -123,6 +125,8 @@ export function createPlayer( k: KAPLAYCtx, pos: Vec2, frame: number, id: string
         ]!)
 
         if (isWeapon) {
+            player.weapon = newItem; // <____TEST SYNC
+
             newItem.onUpdate(() => {
                 if (player.direction === 'left') {
                     if (newItem.anchor === 'botleft') {
@@ -155,40 +159,32 @@ export function createPlayer( k: KAPLAYCtx, pos: Vec2, frame: number, id: string
                 newItem.attack = getRangedAttack(k, player, newItem)
                 newItem.tag('ranged');                
                 newItem.collisionIgnore = ['*'];
+
             }
         }
             
         item.destroy();
     })
 
-    player.onHurt(() => {
-        const prev = {...store.get(gameState)!};
-        prev.players[id].health = player.hp();
-        store.set(gameState, prev)
-    })
+
 
     player.onUpdate(() => {
         if (player.hp() === 0) {
             k.destroy(player)
             return
         }
-        const prev = { ...store.get(gameState)! };
 
+        const prev = store.get(gameState)!;
+        const playerState = prev.players[id]
 
-        if ( id === ownId ) {
-            prev.players[id].pos = {
-                x: player.pos.x,
-                y: player.pos.y
-            }
-            prev.players[id].direction = player.direction as 'right' | 'left';
-            prev.players[id].isAttacking = player.isAttacking
-    } else {
-            if ( prev.players[id] ) {
-                const stateHp = prev.players[id].health!
-                if ( player.hp() !== stateHp ) player.setHP(stateHp);
-            }
-        }
-            
+        if (id === ownId) {
+            playerState.pos = { x: player.pos.x, y: player.pos.y };
+            playerState.direction = player.direction as 'right' | 'left';
+            playerState.isAttacking = player.isAttacking;
+            playerState.health = player.hp();
+            playerState.ammo = player.ammo;
+        } 
+
         store.set(gameState, prev)
     })
 
@@ -237,16 +233,20 @@ function getRangedAttack(k: KAPLAYCtx, player: Player, weapon: Item) {
     return async function () {
         if (weapon && !player.isAttacking) {
             player.isAttacking = true;
-            
             const bullet = createBullet(k, player.direction as 'left'|'right');
             bullet.pos = player.pos;
             k.add(bullet)
             bullet.onCollide((obj) => {
                 if ( obj?.bigid !== player.bigid ) {
-                    if (obj.tags.includes('player')) obj.hurt();
+                    if (obj.tags.includes('player')){ 
+                        obj.hurt();
+                        console.log(obj.hp())
+                    }
                     bullet.destroy();
                 }
             })
+
+            if (player.ammo) player.ammo - 1;
 
             const startingPoint = weapon.angle
             const swingPoint = player.direction === 'right' ? startingPoint - 30 : startingPoint + 30;

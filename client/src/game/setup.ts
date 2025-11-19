@@ -50,6 +50,8 @@ export default async function initGame() {
                 const enemy = k.get('enemy')[0] as Player;
                 const enemyState = state?.players[enemy.bigid];
                 const enemyVec = new k.Vec2(enemyState?.pos.x, enemyState?.pos.y);
+                const enemyAmmo = enemyState?.ammo ?? null;
+                const enemyHp = enemyState?.health!;
                 const dir = enemyState?.direction!
                 if  (dir === 'right') {
                     enemy.flipX = false
@@ -64,6 +66,8 @@ export default async function initGame() {
                 }
                 enemy.direction = dir
                 enemy.moveTo(enemyVec)
+                enemy.ammo = enemyAmmo
+                enemy.setHP(enemyHp)
 
                 if (enemyState?.isAttacking && !attackTimeout) {
                     enemy.attack()
@@ -81,7 +85,7 @@ export default async function initGame() {
 
 function addPlayersFromState(k: KAPLAYCtx, state: GameState, ownId: string, spawn: Vec2) {
     for (const [id, player] of Object.entries(state?.players!)) {
-        if (k.get(id).length !== 0) continue;
+        if (k.get(id).length !== 0 || !player) continue;
         const frame = FRAMES.characters[player.sprite]
         const entity = createPlayer(k, spawn, frame, id)
         if (id === ownId) {
