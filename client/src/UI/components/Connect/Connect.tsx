@@ -31,12 +31,8 @@ export function Connection() {
             } else {
                 const snapshot = JSON.parse(data) as GameState;
                 setGState(snapshot)
-                for (const [id, player] of Object.entries(snapshot.players)) {
-                    console.log('[STATE]: %s --- %s', id, JSON.stringify(player.pos))
-                }
+                console.log('[STATE]: \n\n', JSON.stringify(snapshot.players));
             }
-            
-
         }
 
         return () => {

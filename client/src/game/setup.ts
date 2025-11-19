@@ -17,7 +17,10 @@ export default async function initGame() {
 
     const { map, spawnPoints } = await makeMap(k, 'demo-arena')
     const squareSpawn = spawnPoints.square[0]!
-    
+
+    let attackTimeout = false;
+    const enableAttack = () => attackTimeout = false;
+
     k.scene('demo-arena', () => {
         k.setGravity(GRAVITY);
         k.add([
@@ -35,10 +38,15 @@ export default async function initGame() {
             const ids = Object.keys(state?.players!);
             
             if (players.length !== ids.length) {
-                addPlayersFromState(k, store.get(gameState)!, ownId, squareSpawn);
+                if (players.length < ids.length) {
+                    addPlayersFromState(k, store.get(gameState)!, ownId, squareSpawn);
+                } else {
+                    const left = players.find((p) => !ids.includes(p.bigid));
+                    left?.destroy();
+                }
             }
-            
-            if (players.length > 1) {
+
+            if (players.length > 1 && ids.length > 1) {
                 const enemy = k.get('enemy')[0] as Player;
                 const enemyState = state?.players[enemy.bigid];
                 const enemyVec = new k.Vec2(enemyState?.pos.x, enemyState?.pos.y);
@@ -57,28 +65,30 @@ export default async function initGame() {
                 enemy.direction = dir
                 enemy.moveTo(enemyVec)
 
-                if (enemyState?.isAttacking) {
+                if (enemyState?.isAttacking && !attackTimeout) {
                     enemy.attack()
+                    attackTimeout = true;
+                    setTimeout(enableAttack, 500)
                 }
             }
-            
-            ws?.send(JSON.stringify(store.get(gameState)))
+
+            ws?.send(JSON.stringify(store.get(gameState)?.players[ownId]))
         })
     }) 
     
     k.go('demo-arena')
 }
 
-function addPlayersFromState( k:KAPLAYCtx, state:GameState, ownId: string, spawn: Vec2) {
-        for (const [id, player] of Object.entries(state?.players!)) {
-            if (k.get(id).length !== 0) continue;
-            const frame = FRAMES.characters[player.sprite]
-            const entity = createPlayer(k, spawn, frame, id)
-            k.add(entity)
-            if (id === ownId) {
-                setControls(k, entity)
-            } else {
-                entity.tag('enemy')
-            }
+function addPlayersFromState(k: KAPLAYCtx, state: GameState, ownId: string, spawn: Vec2) {
+    for (const [id, player] of Object.entries(state?.players!)) {
+        if (k.get(id).length !== 0) continue;
+        const frame = FRAMES.characters[player.sprite]
+        const entity = createPlayer(k, spawn, frame, id)
+        if (id === ownId) {
+            setControls(k, entity)
+        } else {
+            entity.tag('enemy')
         }
+        k.add(entity)
+    }
 }

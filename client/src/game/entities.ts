@@ -26,6 +26,7 @@ export function createPlayer( k: KAPLAYCtx, pos: Vec2, frame: number, id: string
             direction: 'right',
             bigid: id,
             isAttacking: false,
+            ammo: null,
             attack: async function() {
                 const player = this as Player;
                 const weapon = player.children.find(c => c.tags.includes('weapon'));
@@ -166,30 +167,26 @@ export function createPlayer( k: KAPLAYCtx, pos: Vec2, frame: number, id: string
         store.set(gameState, prev)
     })
 
-    player.on('ammo-drain', (ammo:number) => {
-        const prev = {...store.get(gameState)!};
-        const newAmmo = prev.players[id].ammo! - ammo; 
-        prev.players[id].ammo = newAmmo ? newAmmo : null;
-
-        store.set(gameState, prev)
-    })
-
     player.onUpdate(() => {
         if (player.hp() === 0) {
             k.destroy(player)
             return
         }
         const prev = { ...store.get(gameState)! };
-        const stateHp = prev.players[id].health!
 
-        if (player.hp() !== stateHp) player.setHP(stateHp);
-        if (id === ownId) {
+
+        if ( id === ownId ) {
             prev.players[id].pos = {
                 x: player.pos.x,
                 y: player.pos.y
             }
             prev.players[id].direction = player.direction as 'right' | 'left';
             prev.players[id].isAttacking = player.isAttacking
+    } else {
+            if ( prev.players[id] ) {
+                const stateHp = prev.players[id].health!
+                if ( player.hp() !== stateHp ) player.setHP(stateHp);
+            }
         }
             
         store.set(gameState, prev)
@@ -240,7 +237,6 @@ function getRangedAttack(k: KAPLAYCtx, player: Player, weapon: Item) {
     return async function () {
         if (weapon && !player.isAttacking) {
             player.isAttacking = true;
-            player.trigger('ammo-drain', 1)
             
             const bullet = createBullet(k, player.direction as 'left'|'right');
             bullet.pos = player.pos;
