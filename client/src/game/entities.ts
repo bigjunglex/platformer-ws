@@ -32,6 +32,11 @@ export function createPlayer( k: KAPLAYCtx, pos: Vec2, frame: number, id: string
             attack: async function() {
                 const player = this as Player;
                 const weapon = player.children.find(c => c.tags.includes('weapon'));
+                if (player.ammo) {
+                    if (player.bigid === ownId) player.ammo = player.ammo - 1 || null;
+                };
+                if (!player.ammo) weapon?.destroy();
+                
                 await weapon?.attack();
             }
         },
@@ -108,12 +113,6 @@ export function createPlayer( k: KAPLAYCtx, pos: Vec2, frame: number, id: string
             isWeapon = false;
         }
 
-        if ( type === 'gun' || type === 'pistol' ) {
-            const prev = store.get(gameState)!;
-            prev.players[id].ammo = 5;
-            store.set(gameState, prev)
-        }
-
         const newItem:Item  = player.add([
             k.sprite('assets', { frame }),
             shape ? k.area({ shape }) : '',
@@ -159,7 +158,7 @@ export function createPlayer( k: KAPLAYCtx, pos: Vec2, frame: number, id: string
                 newItem.attack = getRangedAttack(k, player, newItem)
                 newItem.tag('ranged');                
                 newItem.collisionIgnore = ['*'];
-
+                player.ammo = 5
             }
         }
             
@@ -230,6 +229,7 @@ function getMeleeAttack(k: KAPLAYCtx, player: Player, weapon: Item) {
 }
 
 function getRangedAttack(k: KAPLAYCtx, player: Player, weapon: Item) {
+    let shotCount = 0;
     return async function () {
         if (weapon && !player.isAttacking) {
             player.isAttacking = true;
@@ -240,13 +240,13 @@ function getRangedAttack(k: KAPLAYCtx, player: Player, weapon: Item) {
                 if ( obj?.bigid !== player.bigid ) {
                     if (obj.tags.includes('player')){ 
                         obj.hurt();
-                        console.log(obj.hp())
                     }
                     bullet.destroy();
                 }
             })
 
-            if (player.ammo) player.ammo - 1;
+            ++shotCount
+            k.debug.log('[Ammo]: ', player.ammo, '[Shots]: ', shotCount)
 
             const startingPoint = weapon.angle
             const swingPoint = player.direction === 'right' ? startingPoint - 30 : startingPoint + 30;

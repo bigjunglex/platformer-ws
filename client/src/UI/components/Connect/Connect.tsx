@@ -5,7 +5,7 @@ import { useEffect,  useState } from "react";
 export function Connection() {
     const [ws, setWs] = useAtom(connection);
     const [ownId, setOwnId] = useAtom(playerId);
-    const [gState, setGState] = useAtom(gameState)
+    const [, setGState] = useAtom(gameState)
     const [connected, setConnected] = useState(false)
     const url = import.meta.env.VITE_WS_URL;
 
@@ -30,9 +30,7 @@ export function Connection() {
                 gotId = id;
             } else {
                 const snapshot = JSON.parse(data) as GameState;
-                console.log(gotId)
                 const enemyStateId = Object.keys(snapshot.players).find(k => k !== gotId)!;
-                console.log(enemyStateId)
                 setGState(prev => ({
                     players: {
                         ...prev?.players,

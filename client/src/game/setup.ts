@@ -50,7 +50,7 @@ export default async function initGame() {
                 const enemy = k.get('enemy')[0] as Player;
                 const enemyState = state?.players[enemy.bigid];
                 const enemyVec = new k.Vec2(enemyState?.pos.x, enemyState?.pos.y);
-                const enemyAmmo = enemyState?.ammo ?? null;
+                const enemyAmmo = enemyState?.ammo!;
                 const enemyHp = enemyState?.health!;
                 const dir = enemyState?.direction!
                 if  (dir === 'right') {
@@ -66,8 +66,9 @@ export default async function initGame() {
                 }
                 enemy.direction = dir
                 enemy.moveTo(enemyVec)
-                enemy.ammo = enemyAmmo
                 enemy.setHP(enemyHp)
+                enemy.ammo = enemyAmmo
+
 
                 if (enemyState?.isAttacking && !attackTimeout) {
                     enemy.attack()
@@ -75,7 +76,7 @@ export default async function initGame() {
                     setTimeout(enableAttack, 500)
                 }
             }
-
+            
             ws?.send(JSON.stringify(store.get(gameState)?.players[ownId]))
         })
     }) 
