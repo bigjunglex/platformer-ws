@@ -109,15 +109,17 @@ wss.on('connection', (ws: WebSocket) => {
     }
     
     ws.on('close', () => {
-        const idx = room.users.findIndex(u => u?.id === id);
-        room.users.splice(idx, 1);
-        delete room.state.players[id];
+        // const idx = room.users.findIndex(u => u?.id === id);
+        // room.users.splice(idx, 1);
+        // delete room.state.players[id];
+// 
+        // for (const user of room.users) {
+            // tick = 0;
+            // console.log('[%s] RESET ', tick, user!.id)
+            // user?.ws.send(JSON.stringify(room.state))
+        // }
 
-        for (const user of room.users) {
-            tick = 0;
-            console.log('[%s] RESET ', tick, user!.id)
-            user?.ws.send(JSON.stringify(room.state))
-        }
+        console.log(room.id, ' abandon')
     })
 
     ws.on('error', console.error);
@@ -131,9 +133,9 @@ wss.on('connection', (ws: WebSocket) => {
         if (!check) return;
 
         if (check) {
+            console.log('[%s] send to ', tick, room.users.map(u => u?.id))
+            tick++
             for (const user of room.users) {
-                console.log('[%s] send to ', tick, user!.id)
-                tick++
                 user?.ws.send(JSON.stringify(room.state))
             }
 

@@ -11,7 +11,6 @@ export type PlayerParam = Parameters<typeof createPlayer>
 export function createPlayer( k: KAPLAYCtx, pos: Vec2, frame: number, id: string) {
     const store = getDefaultStore();
     const ownId = store.get(playerId);
-    console.log(ownId)
     const player = k.make([
         k.sprite('assets', { frame: frame }),
         k.area({ shape: new k.Rect(k.vec2(0,0), 32, 64) }),
@@ -35,7 +34,7 @@ export function createPlayer( k: KAPLAYCtx, pos: Vec2, frame: number, id: string
                 if (player.ammo) {
                     if (player.bigid === ownId) player.ammo = player.ammo - 1 || null;
                 };
-                if (!player.ammo) weapon?.destroy();
+                if (!player.ammo && weapon?.tags.includes('ranged')) weapon?.destroy();
                 
                 await weapon?.attack();
             }
@@ -229,7 +228,6 @@ function getMeleeAttack(k: KAPLAYCtx, player: Player, weapon: Item) {
 }
 
 function getRangedAttack(k: KAPLAYCtx, player: Player, weapon: Item) {
-    let shotCount = 0;
     return async function () {
         if (weapon && !player.isAttacking) {
             player.isAttacking = true;
@@ -244,9 +242,6 @@ function getRangedAttack(k: KAPLAYCtx, player: Player, weapon: Item) {
                     bullet.destroy();
                 }
             })
-
-            ++shotCount
-            k.debug.log('[Ammo]: ', player.ammo, '[Shots]: ', shotCount)
 
             const startingPoint = weapon.angle
             const swingPoint = player.direction === 'right' ? startingPoint - 30 : startingPoint + 30;

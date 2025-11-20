@@ -31,13 +31,16 @@ export function Connection() {
             } else {
                 const snapshot = JSON.parse(data) as GameState;
                 const enemyStateId = Object.keys(snapshot.players).find(k => k !== gotId)!;
-                setGState(prev => ({
-                    players: {
-                        ...prev?.players,
-                        [enemyStateId]: snapshot.players[enemyStateId]
-                    },
-                    loot: prev?.loot!
-                }))
+
+                if (enemyStateId) {
+                    setGState(prev => ({
+                        players: {
+                            [gotId]: prev?.players[gotId]!,
+                            [enemyStateId]: snapshot.players[enemyStateId]
+                        },
+                        loot: prev?.loot!
+                    }))
+                }
             }
         }
 

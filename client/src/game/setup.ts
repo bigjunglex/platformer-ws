@@ -38,11 +38,8 @@ export default async function initGame() {
             const ids = Object.keys(state?.players!);
             
             if (players.length !== ids.length) {
-                if (players.length < ids.length) {
+                if (players.length < ids.length && players.length < 2) {
                     addPlayersFromState(k, store.get(gameState)!, ownId, squareSpawn);
-                } else {
-                    const left = players.find((p) => !ids.includes(p.bigid));
-                    left?.destroy();
                 }
             }
 
@@ -69,7 +66,7 @@ export default async function initGame() {
                 enemy.setHP(enemyHp)
                 enemy.ammo = enemyAmmo
 
-
+                // go biggaz
                 if (enemyState?.isAttacking && !attackTimeout) {
                     enemy.attack()
                     attackTimeout = true;
