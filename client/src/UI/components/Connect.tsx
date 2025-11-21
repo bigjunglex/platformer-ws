@@ -24,7 +24,6 @@ export function Connection() {
             if ( !gotId ) {
                 const [ state, id ] = data.split('||')
                 const snapshot = JSON.parse(state)
-                console.log(snapshot, id)
                 setOwnId(id);
                 setGState(snapshot)
                 gotId = id;

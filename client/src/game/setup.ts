@@ -20,7 +20,24 @@ export default async function initGame() {
             k.rect(k.width(), k.height()),
             k.color(k.Color.fromHex('#ececec')),
             k.fixed(),
-        ])
+        ]);
+        
+        const arenaWidth = 1152;
+        const background = [
+            k.add([k.sprite('demo-arena'), k.pos(0, 160)]),
+            k.add([k.sprite('demo-arena'), k.pos(arenaWidth, 160)])
+        ]
+        
+        k.onUpdate(() => {
+            if (background[1].pos.x < 0) {
+                background[0].moveTo(background[1].pos.x + arenaWidth, 0);
+                const frontBgPiece = background.shift();
+                if (frontBgPiece) background.push(frontBgPiece);
+            }
+
+            background[0].move(-200, 0);
+            background[1].moveTo(background[0].pos.x + arenaWidth, 0);
+        })
     })
 
     const { map, spawnPoints } = await makeMap(k, 'demo-arena')
@@ -86,12 +103,11 @@ export default async function initGame() {
         })
     }) 
     
-    if (Object.keys(store.get(gameState)?.players!).length < 2) {
-        k.go('menu')
-    } else {
+    if (Object.keys(store.get(gameState)?.players!).length === 2) {
         k.go('demo-arena')
+    } else {
+        k.go('menu')
     }
-
 }
 
 function addPlayersFromState(k: KAPLAYCtx, state: GameState, ownId: string, spawn: Vec2) {

@@ -21,7 +21,7 @@ export function UI() {
         if (!id) return;
         initGame();
         setScene(players === 2 ? 'arena' : 'menu')
-    }, [ players ])
+    }, [ players, id ])
 
     return (
         <div id="ui-container">
