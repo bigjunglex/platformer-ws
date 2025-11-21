@@ -1,5 +1,5 @@
 import { useAtom } from "jotai";
-import { connection, playerId, gameState } from "../../../shared/store";
+import { connection, playerId, gameState } from "../../shared/store";
 import { useEffect,  useState } from "react";
 
 export function Connection() {
@@ -40,6 +40,8 @@ export function Connection() {
                         },
                         loot: prev?.loot!
                     }))
+                } else {
+                    setGState(snapshot)
                 }
             }
         }
@@ -53,6 +55,6 @@ export function Connection() {
     }, [])
 
     return (
-        <span>{ ws && ownId ? ownId : 'Getting connection...'}</span>
+        <span>{ ws && ownId ? 'ID: ' + ownId : 'Getting connection...'} </span>
     )
 }

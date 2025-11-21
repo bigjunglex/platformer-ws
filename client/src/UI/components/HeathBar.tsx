@@ -1,5 +1,5 @@
 import { useAtomValue } from "jotai"
-import { playerId, gameState } from "../../../shared/store"
+import { playerId, gameState } from "../../shared/store"
 
 export const HealthBar = () => {
     const id = useAtomValue(playerId)!;

@@ -31,12 +31,12 @@ export function createPlayer( k: KAPLAYCtx, pos: Vec2, frame: number, id: string
             attack: async function() {
                 const player = this as Player;
                 const weapon = player.children.find(c => c.tags.includes('weapon'));
-                if (player.ammo) {
-                    if (player.bigid === ownId) player.ammo = player.ammo - 1 || null;
+                if (player.ammo && player.bigid === ownId) {
+                    player.ammo = player.ammo - 1 || null;
                 };
-                if (!player.ammo && weapon?.tags.includes('ranged')) weapon?.destroy();
                 
                 await weapon?.attack();
+                if (!player.ammo && weapon?.tags.includes('ranged')) weapon?.destroy();
             }
         },
         'player',
@@ -148,7 +148,6 @@ export function createPlayer( k: KAPLAYCtx, pos: Vec2, frame: number, id: string
                 newItem.onCollide('player', (col: GameObj<any>) => {
                     if (col.id !== player.id) {
                         col.hurt()
-                        console.log(col.hp())
                     }
                 })
             }

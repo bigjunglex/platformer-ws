@@ -15,6 +15,14 @@ export default async function initGame() {
     const ownId = store.get(playerId)!
     const ws = store.get(connection)
 
+    k.scene('menu', () => {
+        k.add([
+            k.rect(k.width(), k.height()),
+            k.color(k.Color.fromHex('#ececec')),
+            k.fixed(),
+        ])
+    })
+
     const { map, spawnPoints } = await makeMap(k, 'demo-arena')
     const squareSpawn = spawnPoints.square[0]!
 
@@ -78,7 +86,12 @@ export default async function initGame() {
         })
     }) 
     
-    k.go('demo-arena')
+    if (Object.keys(store.get(gameState)?.players!).length < 2) {
+        k.go('menu')
+    } else {
+        k.go('demo-arena')
+    }
+
 }
 
 function addPlayersFromState(k: KAPLAYCtx, state: GameState, ownId: string, spawn: Vec2) {

@@ -51,8 +51,6 @@ const sprites = [
 
 let i = sprites.length;
 
-
-let tick = 0;
 const rooms: Room[] = [];
 
 const wss = new WebSocketServer({ port });
@@ -109,17 +107,27 @@ wss.on('connection', (ws: WebSocket) => {
     }
     
     ws.on('close', () => {
-        // const idx = room.users.findIndex(u => u?.id === id);
-        // room.users.splice(idx, 1);
-        // delete room.state.players[id];
-// 
-        // for (const user of room.users) {
-            // tick = 0;
-            // console.log('[%s] RESET ', tick, user!.id)
-            // user?.ws.send(JSON.stringify(room.state))
-        // }
+        const userIdx = room.users.findIndex(u => u?.id === id);
+        const readyIdx = room.users.findIndex(u => u?.id === id);
+        room.users.splice(userIdx, 1);
+        room.ready.splice(readyIdx, 1);
+        
+        const [left] = room.users;
+        room.state = createState();
+        if (left) {
+            room.state.players[left.id] = {
+                pos: { x: 0, y: 0 },
+                direction: 'right',
+                health: 5,
+                ammo: null,
+                sprite,
+                isAttacking: false,
+            }
 
-        console.log(room.id, ' abandon')
+            left.ws.send(JSON.stringify(room.state))
+            console.log('[%s] - RESET', left.id)
+        }
+
     })
 
     ws.on('error', console.error);
@@ -133,8 +141,7 @@ wss.on('connection', (ws: WebSocket) => {
         if (!check) return;
 
         if (check) {
-            console.log('[%s] send to ', tick, room.users.map(u => u?.id))
-            tick++
+            console.log('[%s] send to ', room.users.map(u => u?.id))
             for (const user of room.users) {
                 user?.ws.send(JSON.stringify(room.state))
             }
