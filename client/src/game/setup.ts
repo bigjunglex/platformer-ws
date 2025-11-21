@@ -42,6 +42,7 @@ export default async function initGame() {
 
     const { map, spawnPoints } = await makeMap(k, 'demo-arena')
     const squareSpawn = spawnPoints.square[0]!
+    const roundSpawn = spawnPoints.round[0]!
 
     let attackTimeout = false;
     const enableAttack = () => attackTimeout = false;
@@ -55,7 +56,7 @@ export default async function initGame() {
         ])
         k.add(map);
 
-        addPlayersFromState(k, store.get(gameState)!, ownId, squareSpawn)
+        addPlayersFromState(k, store.get(gameState)!, ownId, [squareSpawn, roundSpawn])
 
         k.onUpdate(() => {
             const players = k.get('player');
@@ -64,7 +65,7 @@ export default async function initGame() {
             
             if (players.length !== ids.length) {
                 if (players.length < ids.length && players.length < 2) {
-                    addPlayersFromState(k, store.get(gameState)!, ownId, squareSpawn);
+                    addPlayersFromState(k, store.get(gameState)!, ownId, [squareSpawn, roundSpawn]);
                 }
             }
 
@@ -110,9 +111,10 @@ export default async function initGame() {
     }
 }
 
-function addPlayersFromState(k: KAPLAYCtx, state: GameState, ownId: string, spawn: Vec2) {
+function addPlayersFromState(k: KAPLAYCtx, state: GameState, ownId: string, spawns: Vec2[]) {
     for (const [id, player] of Object.entries(state?.players!)) {
         if (k.get(id).length !== 0 || !player) continue;
+        const spawn = player.sprite.includes('Square') ? spawns[0] : spawns[1]
         const frame = FRAMES.characters[player.sprite]
         const entity = createPlayer(k, spawn, frame, id)
         if (id === ownId) {

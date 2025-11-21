@@ -22,7 +22,7 @@
 
 ### STAGES
 <!-- NO POINT IN IMPLEMENTAITO UNTIL OK NETWORK -->
-- [ ] load screen
+- [x] load screen
 - [ ] connect / make room / current room id
 - [ ] wait + ready check
 - [ ] replay 

@@ -11,6 +11,7 @@ function initKaplay() {
         debug: true,
         debugKey: 'f2',
         background: '#ececec',
+        pixelDensity: window.devicePixelRatio,
     });
 }
 
