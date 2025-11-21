@@ -1,6 +1,6 @@
 import { type AnchorComp, type AreaComp, type GameObj, type KAPLAYCtx, type PosComp, type Rect, type RotateComp, type SpriteComp, type Vec2 } from "kaplay";
-import { backFlip } from "./utils";
-import { FRAMES, HITBOXES, ITEM_OFFSETS, type ItemOffset } from "./constants";
+import { backFlip, createWeaponDrop } from "./utils";
+import { FRAMES, GENERAL_WEAPON_TAGS, HITBOXES, ITEM_OFFSETS, type ItemOffset } from "./constants";
 import { getDefaultStore } from "jotai";
 import { gameState, playerId } from "../shared/store";
 
@@ -122,7 +122,9 @@ export function createPlayer( k: KAPLAYCtx, pos: Vec2, frame: number, id: string
             type
         ]!)
 
+        
         if (isWeapon) {
+            if (player.weapon) dropWeapon(k, player, player.weapon) 
             player.weapon = newItem; // <____TEST SYNC
 
             newItem.onUpdate(() => {
@@ -277,8 +279,23 @@ function createBullet(k:KAPLAYCtx, direction: 'left' | 'right') {
         ),
         k.anchor('center'),
         k.pos(),
-        direction === 'right' ? k.move(k.RIGHT, 600) : k.move(k.LEFT, 600)
+        direction === 'right' ? k.move(k.RIGHT, 600) : k.move(k.LEFT, 800)
     ])
 
     return bullet
+}
+
+
+function dropWeapon(k: KAPLAYCtx, player: Player, weapon: Item) {
+    const [x, y] = [ player.pos.x, player.pos.y ];
+    const name = weapon.tags.find(t => !GENERAL_WEAPON_TAGS.includes(t))!;
+    const drop = createWeaponDrop(k,  { x, y }, name);
+
+    weapon.destroy();
+    k.add(drop);
+
+    const baseIgnore = [...player.collisionIgnore]; 
+    player.collisionIgnore.push(name);
+
+    setTimeout(() => player.collisionIgnore = baseIgnore, 800)
 }

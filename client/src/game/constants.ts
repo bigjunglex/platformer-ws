@@ -119,3 +119,10 @@ export const HITBOXES: Hitboxes = {
         }
     }
 }
+
+export const GENERAL_WEAPON_TAGS = [
+    'ranged',
+    'item',
+    'weapon',
+    '*'
+]

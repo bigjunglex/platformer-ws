@@ -46,19 +46,10 @@ export async function makeMap(k: KAPLAYCtx, name: string) {
         if (layer.name === 'weapons') {
             for (const weapon of layer.objects) {
                 const name = weapon.name as string
-                map.add([
-                    k.sprite('assets', { frame: FRAMES.weapons[name]}),
-                    k.area({
-                        shape: new k.Rect(
-                            k.vec2(0),
-                            HITBOXES.weapons[name].width,
-                            HITBOXES.weapons[name].height
-                        )
-                    }),
-                    k.pos(weapon.x, weapon.y),
-                    k.anchor('bot'),
-                    'item', 'weapon', name, 'static'
-                ])
+                const x = weapon.x as number;
+                const y = weapon.y as number
+                const drop = createWeaponDrop(k, {x, y}, name)
+                map.add(drop)
             }
         }
 
@@ -149,6 +140,25 @@ export async function getItem(item: string | null): Promise<string> {
     })
     
 }
+
+
+export function createWeaponDrop(k:KAPLAYCtx, pos: Position, name: string) {
+    const drop = k.make([
+        k.sprite('assets', { frame: FRAMES.weapons[name] }),
+        k.area({
+            shape: new k.Rect(
+                k.vec2(0),
+                HITBOXES.weapons[name].width,
+                HITBOXES.weapons[name].height
+            )
+        }),
+        k.pos(pos.x, pos.y),
+        k.anchor('bot'),
+        'item', 'weapon', name, 'static'
+    ])
+    return drop
+}
+
 
 /**
  * use for bullets id guess or mb 
