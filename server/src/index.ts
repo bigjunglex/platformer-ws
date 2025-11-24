@@ -14,7 +14,6 @@ type Player = {
     ammo: number | null;
     sprite: string;
     isAttacking: boolean;
-    isDead: boolean;
 }
 
 type Loot = {
@@ -25,7 +24,6 @@ type Loot = {
 
 type GameState = {
     players: { [key: string]: Player };
-    loot: Loot[];
 }
 
 type Ready = { [key: string]: boolean }
@@ -137,7 +135,6 @@ function generateID() {
 function createState(): GameState {
     return {
         players: {},
-        loot: []
     }
 }
 
@@ -149,7 +146,6 @@ function createPlayer(sprite: string): Player {
         sprite,
         ammo: null,
         isAttacking: false,
-        isDead: false
     }
 }
 

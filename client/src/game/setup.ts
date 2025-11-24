@@ -75,7 +75,7 @@ export default async function initGame() {
                     setTimeout(() => {
                         addPlayersFromState(k, store.get(gameState)!, ownId, [squareSpawn, roundSpawn]);
                         respawnSwitch = true
-                    }, 5000)
+                    }, 500)
                 }
             }
 

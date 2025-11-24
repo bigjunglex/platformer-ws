@@ -10,18 +10,17 @@ type PlayerStore = {
     ammo: number | null;
     sprite: string;
     isAttacking: boolean;
-    isDead: boolean;    
 }
 
-type Loot = {
-    pos: Position;
-    sprite: string;
-    tags: string[];
-}
+// type Loot = {
+//     pos: Position;
+//     sprite: string;
+//     tags: string[];
+// }
 
 type GameState = {
     players: { [key: string]: PlayerStore };
-    loot: Loot[];
+    // loot: Loot[];
 }
 
 type PlayerFild = keyof PlayerStore
