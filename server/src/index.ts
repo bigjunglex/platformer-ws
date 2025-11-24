@@ -14,6 +14,7 @@ type Player = {
     ammo: number | null;
     sprite: string;
     isAttacking: boolean;
+    isDead: boolean;
 }
 
 type Loot = {
@@ -65,36 +66,15 @@ wss.on('connection', (ws: WebSocket) => {
     // nado norm rooms sdelat' budet
     let room:Room = rooms.find(r => r.users.length === 1)!;
 
-
     if (!room) {
         const state = createState();
-        state.players[id] = {
-            pos: { x: 0, y: 0 },
-            direction: 'right',
-            health: 5,
-            ammo: null,
-            sprite,
-            isAttacking: false,
-        }
+        state.players[id] = createPlayer(sprite);
 
-        room = {
-            users: [ user ],
-            id: roomId,
-            state,
-            ready: []
-        }
+        room = createRoom(roomId, user, state)
         room.ready.push({ [id]: false} )
         rooms.push(room)
     } else {
-        room.state.players[id] = {
-            pos: { x: 0, y: 0 },
-            direction: 'right',
-            health: 5,
-            sprite,
-            ammo: null,
-            isAttacking: false,
-        }
-        
+        room.state.players[id] = createPlayer(sprite);
         room.ready.push({ [id]: false} )
         room.users.push(user)
     }
@@ -115,15 +95,7 @@ wss.on('connection', (ws: WebSocket) => {
         const [left] = room.users;
         room.state = createState();
         if (left) {
-            room.state.players[left.id] = {
-                pos: { x: 0, y: 0 },
-                direction: 'right',
-                health: 5,
-                ammo: null,
-                sprite,
-                isAttacking: false,
-            }
-
+            room.state.players[left.id] = createPlayer(sprite);
             left.ws.send(JSON.stringify(room.state))
             console.log('[%s] - RESET', left.id)
         }
@@ -166,5 +138,26 @@ function createState(): GameState {
     return {
         players: {},
         loot: []
+    }
+}
+
+function createPlayer(sprite: string): Player {
+    return {
+        pos: { x: 0, y: 0 },
+        direction: 'right',
+        health: 5,
+        sprite,
+        ammo: null,
+        isAttacking: false,
+        isDead: false
+    }
+}
+
+function createRoom(id: string, user: User, state: GameState): Room {
+    return {
+        users: [ user ],
+        id,
+        state,
+        ready: []
     }
 }

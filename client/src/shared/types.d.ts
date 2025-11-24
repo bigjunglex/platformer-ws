@@ -9,7 +9,8 @@ type PlayerStore = {
     health: number;
     ammo: number | null;
     sprite: string;
-    isAttacking: boolean;    
+    isAttacking: boolean;
+    isDead: boolean;    
 }
 
 type Loot = {
@@ -22,6 +23,5 @@ type GameState = {
     players: { [key: string]: PlayerStore };
     loot: Loot[];
 }
-
 
 type PlayerFild = keyof PlayerStore

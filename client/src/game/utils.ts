@@ -47,8 +47,9 @@ export async function makeMap(k: KAPLAYCtx, name: string) {
             for (const weapon of layer.objects) {
                 const name = weapon.name as string
                 const x = weapon.x as number;
-                const y = weapon.y as number
-                const drop = createWeaponDrop(k, {x, y}, name)
+                const y = weapon.y as number;
+                const itemID = weapon.type as string;
+                const drop = createWeaponDrop(k, {x, y}, name, itemID)
                 map.add(drop)
             }
         }
@@ -142,7 +143,7 @@ export async function getItem(item: string | null): Promise<string> {
 }
 
 
-export function createWeaponDrop(k:KAPLAYCtx, pos: Position, name: string) {
+export function createWeaponDrop(k:KAPLAYCtx, pos: Position, name: string, itemID: string) {
     const drop = k.make([
         k.sprite('assets', { frame: FRAMES.weapons[name] }),
         k.area({
@@ -152,6 +153,7 @@ export function createWeaponDrop(k:KAPLAYCtx, pos: Position, name: string) {
                 HITBOXES.weapons[name].height
             )
         }),
+        { itemID },
         k.pos(pos.x, pos.y),
         k.anchor('bot'),
         'item', 'weapon', name, 'static'

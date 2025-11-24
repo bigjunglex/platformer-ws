@@ -8,9 +8,13 @@ import { playerId, connection, gameState } from "../shared/store";
 
 const loadOptions: LoadSpriteOpt = { sliceX: 11, sliceY: 11 }
 
+
+/**
+ * refactor scenes? p 
+ */
 export default async function initGame() {
     k.loadSprite('assets', './scribble.png', loadOptions);
-    k.loadSprite('demo-arena',  './demo-arena.png');
+    k.loadSprite('demo-arena', './demo-arena.png');
     const store = getDefaultStore();
     const ownId = store.get(playerId)!
     const ws = store.get(connection)
@@ -24,8 +28,8 @@ export default async function initGame() {
         
         const arenaWidth = 1152;
         const background = [
-            k.add([k.sprite('demo-arena'), k.pos(0, 160)]),
-            k.add([k.sprite('demo-arena'), k.pos(arenaWidth, 160)])
+            k.add([k.sprite('demo-arena'), k.pos(0, 0)]),
+            k.add([k.sprite('demo-arena'), k.pos(arenaWidth, 0)])
         ]
         
         k.onUpdate(() => {
@@ -35,7 +39,7 @@ export default async function initGame() {
                 if (frontBgPiece) background.push(frontBgPiece);
             }
 
-            background[0].move(-200, 0);
+            background[0].move(-300, 0);
             background[1].moveTo(background[0].pos.x + arenaWidth, 0);
         })
     })
@@ -58,14 +62,20 @@ export default async function initGame() {
 
         addPlayersFromState(k, store.get(gameState)!, ownId, [squareSpawn, roundSpawn])
 
+        let respawnSwitch:boolean = true;
+
         k.onUpdate(() => {
             const players = k.get('player');
             const state = store.get(gameState);
             const ids = Object.keys(state?.players!);
             
             if (players.length !== ids.length) {
-                if (players.length < ids.length && players.length < 2) {
-                    addPlayersFromState(k, store.get(gameState)!, ownId, [squareSpawn, roundSpawn]);
+                if (players.length < ids.length && players.length < 2 && respawnSwitch) {
+                    respawnSwitch = false;
+                    setTimeout(() => {
+                        addPlayersFromState(k, store.get(gameState)!, ownId, [squareSpawn, roundSpawn]);
+                        respawnSwitch = true
+                    }, 5000)
                 }
             }
 
@@ -125,3 +135,5 @@ function addPlayersFromState(k: KAPLAYCtx, state: GameState, ownId: string, spaw
         k.add(entity)
     }
 }
+
+

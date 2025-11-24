@@ -4,8 +4,12 @@ import { FRAMES, GENERAL_WEAPON_TAGS, HITBOXES, ITEM_OFFSETS, type ItemOffset } 
 import { getDefaultStore } from "jotai";
 import { gameState, playerId } from "../shared/store";
 
+export type ItemParams = {
+    attack?: () => Promise<void>|void;
+    itemID: string;
+}
 export type Player = ReturnType<typeof createPlayer>
-export type Item = GameObj<SpriteComp | AreaComp | PosComp | RotateComp | AnchorComp | null>  & { attack?: () => Promise<void>|void; }
+export type Item = GameObj<SpriteComp | AreaComp | PosComp | RotateComp | AnchorComp | null>  & ItemParams
 export type PlayerParam = Parameters<typeof createPlayer>
 
 export function createPlayer( k: KAPLAYCtx, pos: Vec2, frame: number, id: string) {
@@ -88,6 +92,10 @@ export function createPlayer( k: KAPLAYCtx, pos: Vec2, frame: number, id: string
         let shape: null | Rect;
         let frame: number; 
         let isWeapon: boolean;
+        
+        const itemID = item.itemID
+
+        k.debug.log(itemID)
         /**
          * mb add array of ids of created items to implement :
          *  collide with item id => search item by id => remove item form map => add to player
@@ -118,6 +126,7 @@ export function createPlayer( k: KAPLAYCtx, pos: Vec2, frame: number, id: string
             k.pos(offset.vec.x, offset.vec.y),
             k.anchor(offset.anchor),
             k.rotate(offset.angle),
+            { itemID },
             isWeapon ? 'weapon' : 'armor',
             type
         ]!)
@@ -166,15 +175,21 @@ export function createPlayer( k: KAPLAYCtx, pos: Vec2, frame: number, id: string
     })
 
 
+    player.onDeath(() => {
+        if (player.weapon && player.bigid === ownId) {
+            dropWeapon(k, player, player.weapon)
+        }
+    })
 
     player.onUpdate(() => {
-        if (player.hp() === 0) {
-            k.destroy(player)
-            return
-        }
-
         const prev = store.get(gameState)!;
         const playerState = prev.players[id]
+        
+        if (player.hp() === 0) {
+            k.destroy(player)
+            playerState.isDead = true;
+            return
+        }
 
         if (id === ownId) {
             playerState.pos = { x: player.pos.x, y: player.pos.y };
@@ -289,10 +304,14 @@ function createBullet(k:KAPLAYCtx, direction: 'left' | 'right') {
 function dropWeapon(k: KAPLAYCtx, player: Player, weapon: Item) {
     const [x, y] = [ player.pos.x, player.pos.y ];
     const name = weapon.tags.find(t => !GENERAL_WEAPON_TAGS.includes(t))!;
-    const drop = createWeaponDrop(k,  { x, y }, name);
+    const drop = createWeaponDrop(k,  { x, y }, name, weapon.itemID);
+    const store = getDefaultStore();
+    const state = store.get(gameState);
 
     weapon.destroy();
     k.add(drop);
+
+    state?.loot.push()
 
     const baseIgnore = [...player.collisionIgnore]; 
     player.collisionIgnore.push(name);

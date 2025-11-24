@@ -8,3 +8,19 @@ canvas {
    left: 0;
    z-index: 1;
 }
+
+.spinner {
+    width: 20px;
+    height: 20px;
+    border: 3px solid #ececec;
+    border-top-color: black;
+    border-radius: 50%;
+    animation: spin 1s ease-in-out infinite;
+}
+
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
