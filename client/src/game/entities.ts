@@ -34,13 +34,19 @@ export function createPlayer( k: KAPLAYCtx, pos: Vec2, frame: number, id: string
             weapon: null as Item|null,
             attack: async function() {
                 const player = this as Player;
-                const weapon = player.children.find(c => c.tags.includes('weapon'));
+                const weapon = player.weapon!
+                
+                if (!weapon) return;
+                
                 if (player.ammo && player.bigid === ownId) {
                     player.ammo = player.ammo - 1 || null;
                 };
                 
-                await weapon?.attack();
-                if (!player.ammo && weapon?.tags.includes('ranged')) weapon?.destroy();
+                await weapon?.attack!();
+                if (!player.ammo && weapon?.tags.includes('ranged')){
+                    weapon?.destroy();
+                    player.weapon = null
+                }
             }
         },
         'player',
